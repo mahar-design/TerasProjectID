@@ -1,379 +1,220 @@
-<!DOCTYPE html>
+from pathlib import Path
+import zipfile
+
+src = Path("/mnt/data/logo teras BARU.png")
+outdir = Path("/mnt/data/teras-project-website")
+outdir.mkdir(exist_ok=True)
+
+html = r'''<!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TERAS PROJECT — Creative Production</title>
+<meta name="description" content="Teras Project — Clothing & Apparel Design & Production.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-    <title>TERAS PROJECT — Apparel</title>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Arial,sans-serif;background:#f5f5f3;color:#111;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+.nav{
+  position:fixed;z-index:20;top:0;left:0;right:0;
+  height:78px;padding:0 6%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(245,245,243,.9);backdrop-filter:blur(14px);
+  border-bottom:1px solid #ddd;
+}
+.nav-logo{height:46px;width:auto}
+.nav-links{display:flex;gap:30px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.nav-links a{position:relative}
+.nav-links a:after{content:"";position:absolute;left:0;bottom:-7px;width:0;height:2px;background:#111;transition:.25s}
+.nav-links a:hover:after{width:100%}
 
-        html {
-            scroll-behavior: smooth;
-        }
+.hero{
+  min-height:100vh;padding:150px 7% 80px;
+  display:grid;grid-template-columns:1.05fr .95fr;gap:5vw;align-items:center;
+  background:#f5f5f3;
+}
+.hero-copy .eyebrow{font-size:12px;font-weight:800;letter-spacing:.3em;margin-bottom:22px}
+.hero h1{font-size:clamp(58px,9vw,140px);line-height:.82;letter-spacing:-.075em;font-weight:900;text-transform:uppercase}
+.hero h1 span{display:block}
+.hero-text{max-width:560px;margin-top:34px;color:#555;font-size:17px;line-height:1.8}
+.cta-row{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap}
+.btn{padding:15px 22px;background:#111;color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;transition:.25s}
+.btn:hover{transform:translateY(-3px)}
+.btn.alt{background:transparent;color:#111;border:1px solid #111}
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #0b0b0b;
-            color: #ffffff;
-            line-height: 1.6;
-        }
+.hero-visual{
+  min-height:580px;background:#111;display:flex;align-items:center;justify-content:center;
+  padding:50px;position:relative;overflow:hidden;
+}
+.hero-visual:before{content:"";position:absolute;width:460px;height:460px;border:1px solid #444;border-radius:50%}
+.hero-visual img{position:relative;width:min(85%,520px);filter:invert(1);mix-blend-mode:screen}
+.hero-label{position:absolute;left:24px;bottom:22px;color:#fff;font-size:10px;letter-spacing:.22em;font-weight:700}
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+.section{padding:110px 7%}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:45px}
+.kicker{font-size:11px;font-weight:800;letter-spacing:.25em;text-transform:uppercase;color:#777;margin-bottom:10px}
+h2{font-size:clamp(40px,6vw,80px);line-height:.9;letter-spacing:-.06em;text-transform:uppercase}
+.section-head p{max-width:380px;color:#666;line-height:1.7;font-size:14px}
 
-        /* NAVBAR */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 100;
-            padding: 20px 6%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(11, 11, 11, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #222;
-        }
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:#111;color:#fff;min-height:390px;padding:28px;display:flex;flex-direction:column;justify-content:space-between;transition:.3s}
+.card:hover{transform:translateY(-6px)}
+.card-number{font-size:11px;color:#888;letter-spacing:.2em}
+.card h3{font-size:32px;letter-spacing:-.04em;text-transform:uppercase}
+.card p{color:#aaa;font-size:13px;line-height:1.7;margin-top:10px}
 
-        .logo {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: 2px;
-        }
+.custom{
+  background:#111;color:#fff;padding:110px 7%;
+  display:grid;grid-template-columns:1fr 1fr;gap:8vw;align-items:end
+}
+.custom h2{max-width:700px}
+.custom-copy{color:#aaa;line-height:1.8;max-width:500px}
+.custom-copy .btn{display:inline-block;background:#fff;color:#111;margin-top:28px}
 
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-            font-size: 14px;
-        }
+.portfolio{background:#e8e8e5}
+.portfolio-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-auto-rows:220px;gap:12px}
+.portfolio-item{background:#ccc;position:relative;overflow:hidden}
+.portfolio-item.big{grid-row:span 2}
+.portfolio-item div{position:absolute;inset:0;display:flex;align-items:flex-end;padding:20px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 
-        .nav-links a:hover {
-            color: #aaa;
-        }
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:8vw}
+.about-grid p{font-size:20px;line-height:1.8;color:#555;max-width:650px}
 
-        /* HERO */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 120px 8% 80px;
-            background:
-                radial-gradient(circle at 80% 30%, #252525 0%, transparent 35%),
-                #0b0b0b;
-        }
+.contact{background:#111;color:#fff;text-align:center;padding:130px 7%}
+.contact h2{font-size:clamp(55px,10vw,140px)}
+.contact p{color:#999;margin:25px auto 35px}
+.contact .btn{display:inline-block;background:#fff;color:#111}
 
-        .hero-content {
-            max-width: 850px;
-        }
+footer{background:#111;color:#666;border-top:1px solid #333;padding:25px 7%;display:flex;justify-content:space-between;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
 
-        .eyebrow {
-            font-size: 13px;
-            letter-spacing: 5px;
-            color: #999;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 {
-            font-size: clamp(60px, 12vw, 150px);
-            line-height: 0.85;
-            letter-spacing: -6px;
-            margin-bottom: 30px;
-        }
-
-        .hero p {
-            max-width: 550px;
-            color: #aaa;
-            font-size: 18px;
-            margin-bottom: 35px;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 15px 28px;
-            background: #fff;
-            color: #000;
-            font-weight: bold;
-            border-radius: 2px;
-            transition: 0.2s;
-        }
-
-        .button:hover {
-            transform: translateY(-3px);
-            background: #ddd;
-        }
-
-        /* SECTION */
-        section {
-            padding: 100px 8%;
-        }
-
-        .section-title {
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
-
-        .section-desc {
-            color: #888;
-            margin-bottom: 50px;
-        }
-
-        /* PRODUCTS */
-        .products {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .product {
-            background: #151515;
-            min-height: 380px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 25px;
-            border: 1px solid #222;
-            transition: 0.3s;
-        }
-
-        .product:hover {
-            transform: translateY(-5px);
-            border-color: #555;
-        }
-
-        .product-image {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #444;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .product h3 {
-            font-size: 22px;
-        }
-
-        .product p {
-            color: #888;
-            font-size: 14px;
-        }
-
-        /* CUSTOM */
-        .custom {
-            background: #f2f2f2;
-            color: #0b0b0b;
-        }
-
-        .custom p {
-            color: #555;
-            max-width: 650px;
-            margin-bottom: 30px;
-        }
-
-        .custom .button {
-            background: #000;
-            color: #fff;
-        }
-
-        /* ABOUT */
-        .about {
-            max-width: 800px;
-        }
-
-        .about p {
-            color: #aaa;
-            font-size: 19px;
-        }
-
-        /* CONTACT */
-        .contact {
-            text-align: center;
-            background: #151515;
-        }
-
-        .contact h2 {
-            font-size: 50px;
-            margin-bottom: 20px;
-        }
-
-        .contact p {
-            color: #888;
-            margin-bottom: 30px;
-        }
-
-        /* FOOTER */
-        footer {
-            padding: 35px 8%;
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #222;
-            color: #666;
-            font-size: 13px;
-        }
-
-        /* MOBILE */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .hero h1 {
-                letter-spacing: -3px;
-            }
-
-            .products {
-                grid-template-columns: 1fr;
-            }
-
-            section {
-                padding: 75px 6%;
-            }
-
-            .contact h2 {
-                font-size: 38px;
-            }
-
-            footer {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-    </style>
+@media(max-width:850px){
+  .nav-links{display:none}
+  .hero{grid-template-columns:1fr;padding-top:120px}
+  .hero-visual{min-height:420px}
+  .cards{grid-template-columns:1fr}
+  .custom,.about-grid{grid-template-columns:1fr}
+  .portfolio-grid{grid-template-columns:1fr 1fr;grid-auto-rows:180px}
+  .portfolio-item.big{grid-row:span 1}
+  .section-head{display:block}
+  .section-head p{margin-top:20px}
+}
+</style>
 </head>
-
 <body>
 
-    <!-- NAVBAR -->
-    <nav>
-        <a href="#" class="logo">TERAS PROJECT</a>
+<nav class="nav">
+  <a href="#"><img class="nav-logo" src="logo-teras.png" alt="Teras Project"></a>
+  <div class="nav-links">
+    <a href="#collection">Collection</a>
+    <a href="#custom">Custom</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
 
-        <ul class="nav-links">
-            <li><a href="#shop">Shop</a></li>
-            <li><a href="#custom">Custom</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
+<header class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">CREATIVE PRODUCTION / APPAREL</div>
+    <h1><span>TERAS</span><span>PROJECT</span></h1>
+    <p class="hero-text">
+      Clothing & apparel design & production. Dari ide, desain, sampai menjadi
+      apparel yang siap dipakai.
+    </p>
+    <div class="cta-row">
+      <a class="btn" href="#collection">Explore Collection</a>
+      <a class="btn alt" href="#custom">Start A Project</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <img src="logo-teras.png" alt="Teras Project logo">
+    <div class="hero-label">TP — CREATIVE PRODUCTION</div>
+  </div>
+</header>
 
-    <!-- HERO -->
-    <header class="hero">
-        <div class="hero-content">
-            <div class="eyebrow">APPAREL / CUSTOM / CREATIVE</div>
+<section class="section" id="collection">
+  <div class="section-head">
+    <div>
+      <div class="kicker">01 / What We Make</div>
+      <h2>Collection</h2>
+    </div>
+    <p>Produk apparel dan kebutuhan produksi yang bisa disesuaikan dengan karakter brand, komunitas, tim, atau project kamu.</p>
+  </div>
+  <div class="cards">
+    <article class="card"><div class="card-number">01</div><div><h3>T-Shirt</h3><p>Graphic tee, merchandise, komunitas, dan apparel brand.</p></div></article>
+    <article class="card"><div class="card-number">02</div><div><h3>Jersey</h3><p>Jersey team, komunitas, event, dan kebutuhan custom.</p></div></article>
+    <article class="card"><div class="card-number">03</div><div><h3>Custom</h3><p>Produksi apparel berdasarkan desain dan kebutuhan project kamu.</p></div></article>
+  </div>
+</section>
 
-            <h1>
-                TERAS<br>
-                PROJECT
-            </h1>
+<section class="custom" id="custom">
+  <div>
+    <div class="kicker">02 / Custom Production</div>
+    <h2>Bring Your Idea To Life.</h2>
+  </div>
+  <div class="custom-copy">
+    <p>Punya desain sendiri? Kirim konsepnya. Teras Project membantu dari pengembangan desain sampai produksi apparel.</p>
+    <a class="btn" href="#contact">Discuss Your Project</a>
+  </div>
+</section>
 
-            <p>
-                Apparel yang lahir dari ide, karakter, dan kreativitas.
-                Temukan koleksi kami atau buat apparel custom sesuai konsep kamu.
-            </p>
+<section class="section portfolio" id="portfolio">
+  <div class="section-head">
+    <div>
+      <div class="kicker">03 / Selected Work</div>
+      <h2>Portfolio</h2>
+    </div>
+    <p>Area ini nanti kita isi dengan foto hasil produksi Teras Project yang asli.</p>
+  </div>
+  <div class="portfolio-grid">
+    <div class="portfolio-item big"><div>Apparel Project / 01</div></div>
+    <div class="portfolio-item"><div>Jersey / 02</div></div>
+    <div class="portfolio-item"><div>Graphic Tee / 03</div></div>
+    <div class="portfolio-item"><div>Custom / 04</div></div>
+    <div class="portfolio-item"><div>Production / 05</div></div>
+  </div>
+</section>
 
-            <a href="#shop" class="button">
-                EXPLORE COLLECTION
-            </a>
-        </div>
-    </header>
+<section class="section">
+  <div class="about-grid">
+    <div>
+      <div class="kicker">04 / About</div>
+      <h2>Made With Character.</h2>
+    </div>
+    <p>
+      Teras Project adalah clothing & apparel design and production yang
+      berangkat dari kreativitas. Kami membuat apparel bukan hanya sebagai
+      pakaian, tetapi sebagai identitas visual dari sebuah ide dan project.
+    </p>
+  </div>
+</section>
 
-    <!-- SHOP -->
-    <section id="shop">
-        <h2 class="section-title">COLLECTION</h2>
+<section class="contact" id="contact">
+  <div class="kicker">05 / Let's Work Together</div>
+  <h2>START A PROJECT.</h2>
+  <p>Siapkan konsep kamu. Hubungi Teras Project untuk mulai berdiskusi.</p>
+  <a class="btn" href="https://wa.me/628XXXXXXXXXX">WhatsApp Us</a>
+</section>
 
-        <p class="section-desc">
-            Pilihan apparel Teras Project.
-        </p>
-
-        <div class="products">
-
-            <div class="product">
-                <div class="product-image">
-                    PRODUCT IMAGE
-                </div>
-
-                <h3>Graphic Tee</h3>
-                <p>Premium graphic apparel</p>
-            </div>
-
-            <div class="product">
-                <div class="product-image">
-                    PRODUCT IMAGE
-                </div>
-
-                <h3>Jersey</h3>
-                <p>Custom team jersey</p>
-            </div>
-
-            <div class="product">
-                <div class="product-image">
-                    PRODUCT IMAGE
-                </div>
-
-                <h3>Custom Apparel</h3>
-                <p>Made according to your concept</p>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- CUSTOM -->
-    <section id="custom" class="custom">
-        <h2 class="section-title">CUSTOM APPAREL</h2>
-
-        <p>
-            Punya desain sendiri? Kami membantu mengubah ide kamu
-            menjadi apparel siap produksi, mulai dari kaos, jersey,
-            hingga kebutuhan apparel komunitas.
-        </p>
-
-        <a href="#contact" class="button">
-            START YOUR PROJECT
-        </a>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about">
-        <div class="about">
-            <h2 class="section-title">ABOUT TERAS PROJECT</h2>
-
-            <p>
-                Teras Project adalah apparel dan creative project
-                yang menggabungkan desain, karakter, dan identitas
-                dalam sebuah karya yang bisa dipakai.
-            </p>
-        </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" class="contact">
-        <h2>LET'S CREATE.</h2>
-
-        <p>
-            Punya ide atau ingin melakukan pemesanan?
-        </p>
-
-        <a href="https://wa.me/628XXXXXXXXXX" class="button">
-            CONTACT VIA WHATSAPP
-        </a>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-        <span>© 2026 TERAS PROJECT</span>
-        <span>APPAREL / CREATIVE PROJECT</span>
-    </footer>
+<footer>
+  <span>© 2026 Teras Project</span>
+  <span>Clothing & Apparel Design & Production</span>
+</footer>
 
 </body>
-</html>
+</html>'''
+
+(outdir / "index.html").write_text(html, encoding="utf-8")
+(outdir / "logo-teras.png").write_bytes(src.read_bytes())
+
+zip_path = Path("/mnt/data/TerasProject-website-v2.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+    z.write(outdir / "index.html", "index.html")
+    z.write(outdir / "logo-teras.png", "logo-teras.png")
+
+print(f"File website siap: {zip_path}")
